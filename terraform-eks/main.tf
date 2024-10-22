@@ -59,6 +59,7 @@ module "eks" {
       desired_size   = 1
       instance_types = ["t2.small"]
       capacity_type  = "SPOT"
+      additional_security_group_ids = [module.vpc.default_security_group_id]
       tags           = { ExtraTag = "helloworld" }
     }
   }
