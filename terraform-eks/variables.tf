@@ -5,5 +5,5 @@ variable "region" {
 
 variable "name" {
   description = "Name for the cluster"
-  default     = "salah-cluster"
+  default     = "mymariocluster"
 }
