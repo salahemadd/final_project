@@ -54,15 +54,13 @@ module "eks" {
 
   eks_managed_node_groups = {
     salahs-cluster-wg = {
-      min_size       = 1
-      max_size       = 2
-      desired_size   = 1
-      instance_types = ["t2.small"]
-      capacity_type  = "SPOT"
+      min_size                      = 1
+      max_size                      = 2
+      desired_size                  = 1
+      instance_types                = ["t2.small"]
+      capacity_type                 = "SPOT"
       additional_security_group_ids = [module.vpc.default_security_group_id]
-      tags           = { ExtraTag = "helloworld" }
     }
   }
 
-  tags = local.tags
 }
