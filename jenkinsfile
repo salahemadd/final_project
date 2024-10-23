@@ -1,0 +1,75 @@
+pipeline{
+    agent any
+    environment {
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        AWS_DEFAULT_REGION = 'eu-central-1'
+    }
+    stages{
+        stage('Checkout SCM'){
+            steps{
+                script{
+                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/salahemadd/final_project.git']])
+                }
+            }
+        }
+        stage('Terraform Initialization'){
+            steps{
+                script{
+                    dir('terraform-eks'){
+                        sh 'terraform init'
+                    }
+                }
+            }
+        }
+        stage('Formating Configuratiion files'){
+            steps{
+                script{
+                    dir('terraform-eks'){
+                        sh 'terraform fmt'
+                    }
+                }
+            }
+        }
+        stage('Terraform Validation'){
+            steps{
+                script{
+                    dir('terraform-eks'){
+                        sh 'terraform validate'
+                    }
+                }
+            }
+        }
+        stage('Terraform Plan'){
+            steps{
+                script{
+                    dir('terraform-eks'){
+                        sh 'terraform plan'
+                    }
+                    input(message: " Are you sure you want to proceed?", ok: "Proceed")
+                }
+            }
+        }
+        stage('EKS cluster creation'){
+            steps{
+                script{
+                    dir('terraform-eks'){
+                        sh 'terraform apply --auto-approve'
+                    }
+                }
+            }
+        }
+        stage('Deploying Game'){
+            steps{
+                script{
+                    dir('deployment'){
+                        sh 'aws eks update-kubeconfig --name mymariocluster --region eu-central-1'
+                        sh 'kubectl apply -f deployment.yml'
+                        sh 'kubectl apply -f service.yml'
+                        sh 'kubectl describe service mario-service'
+                    }
+                }
+            }
+        }
+    }
+}
