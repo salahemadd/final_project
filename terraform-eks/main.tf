@@ -19,14 +19,6 @@ module "vpc" {
   private_subnets    = local.private_subnets
   intra_subnets      = local.intra_subnets
   enable_nat_gateway = true
-
-  public_subnet_tags = {
-    "kubernetes.io/role/elb" = 1
-  }
-
-  private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = 1
-  }
 }
 
 module "eks" {
@@ -62,5 +54,4 @@ module "eks" {
       additional_security_group_ids = [module.vpc.default_security_group_id]
     }
   }
-
 }
